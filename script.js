@@ -1,0 +1,139 @@
+// Single source of truth for the slot grid AND the form dropdown.
+// Edit statuses here: 'TAKEN' | 'OPEN' | '1 LEFT'
+const CATEGORIES = [
+  { category: 'Roofing', status: 'TAKEN' },
+  { category: 'HVAC', status: 'TAKEN' },
+  { category: 'Windows & Doors', status: 'OPEN' },
+  { category: 'Remodel / General Contractor', status: 'OPEN' },
+  { category: 'Dental & Ortho', status: '1 LEFT' },
+  { category: 'Med Spa', status: 'OPEN' },
+  { category: 'Landscape & Hardscape', status: 'TAKEN' },
+  { category: 'Garage Doors', status: 'OPEN' },
+  { category: 'Gutters', status: 'OPEN' },
+  { category: 'Pest Control', status: 'TAKEN' },
+  { category: 'Plumbing', status: '1 LEFT' },
+  { category: 'Auto Repair', status: 'OPEN' },
+  { category: 'Self Storage', status: 'OPEN' },
+  { category: 'Chiropractic', status: 'OPEN' },
+  { category: 'Veterinary', status: '1 LEFT' },
+  { category: 'Insurance', status: 'TAKEN' },
+];
+
+const FAQS = [
+  { q: 'Is design included?', a: 'Yes. We design your side of the card so it matches the look of the shared piece and reads clearly in four seconds. You approve the art before the deadline.' },
+  { q: 'What if my category is already taken?', a: 'One business holds the slot at a time. If your category is taken you can join the waitlist, and we will contact you the moment it opens. In the meantime we may have an adjacent category open.' },
+  { q: 'How do I know it worked?', a: 'We use a dedicated phone number and a simple offer specific to the card so calls are traceable back to the drop. You will know which calls came from the mail.' },
+  { q: 'What is the minimum commitment?', a: 'Direct mail compounds with repetition, so we ask for a short run of consecutive drops rather than a single send. We will walk through the schedule before you commit.' },
+  { q: 'How are the routes chosen?', a: 'Routes are hand-selected by carrier route in the USPS EDDM tool. Single family homes with $90,000 to $120,000+ median household income. No apartments, no businesses. The same routes every month.' },
+  { q: 'What sizes are available?', a: 'The shared card runs at a set format so every business gets comparable space. We will confirm the exact dimensions and your allotment when we prepare your art.' },
+];
+
+const STATUS_META = {
+  TAKEN:    { label: 'Taken',  tileClass: 'slot-taken',   badgeClass: 'badge-taken',   clickable: false },
+  OPEN:     { label: 'Open',   tileClass: 'slot-open',    badgeClass: 'badge-open',    clickable: true },
+  '1 LEFT': { label: '1 left', tileClass: 'slot-oneleft', badgeClass: 'badge-oneleft', clickable: true },
+};
+
+function renderSlotGrid() {
+  const grid = document.getElementById('slotGrid');
+  grid.innerHTML = CATEGORIES.map((c) => {
+    const meta = STATUS_META[c.status];
+    const tag = meta.clickable ? 'button' : 'div';
+    const typeAttr = meta.clickable ? 'type="button"' : 'aria-disabled="true"';
+    const dataAttr = meta.clickable ? `data-category="${c.category}"` : '';
+    return `<${tag} ${typeAttr} class="slot-tile ${meta.tileClass}" ${dataAttr}>
+      <span class="slot-name">${c.category}</span>
+      <span class="slot-badge ${meta.badgeClass}">${meta.label}</span>
+    </${tag}>`;
+  }).join('');
+
+  grid.querySelectorAll('button.slot-tile').forEach((btn) => {
+    btn.addEventListener('click', () => selectCategory(btn.dataset.category));
+  });
+}
+
+function populateCategorySelect() {
+  const select = document.getElementById('categorySelect');
+  CATEGORIES.forEach((c) => {
+    const opt = document.createElement('option');
+    opt.value = c.category;
+    opt.textContent = c.status === 'TAKEN' ? `${c.category} (waitlist)` : c.category;
+    select.appendChild(opt);
+  });
+}
+
+function selectCategory(name) {
+  document.getElementById('categorySelect').value = name;
+  const el = document.getElementById('apply');
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 16, behavior: 'smooth' });
+}
+
+function renderFaq() {
+  const list = document.getElementById('faqList');
+  list.innerHTML = FAQS.map((f, i) => `
+    <div class="faq-item" data-index="${i}">
+      <button type="button" class="faq-question">
+        <span>${f.q}</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer"><p>${f.a}</p></div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.faq-item').forEach((item) => {
+    item.querySelector('.faq-question').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      list.querySelectorAll('.faq-item.open').forEach((el) => el.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+}
+
+// Replace with your own Formspree form ID (sign up free at https://formspree.io,
+// create a form, and copy the ID from the endpoint it gives you: https://formspree.io/f/XXXXXXXX)
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaewqydw';
+
+function setupForm() {
+  const form = document.getElementById('applyForm');
+  const confirmation = document.getElementById('confirmation');
+  const heading = document.getElementById('confirmationHeading');
+  const message = document.getElementById('confirmationMessage');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const categoryName = form.category.value;
+    const isTaken = CATEGORIES.some((c) => c.category === categoryName && c.status === 'TAKEN');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error('Form submission failed');
+
+      heading.textContent = isTaken ? "You're on the waitlist." : 'Thank you.';
+      message.textContent = isTaken
+        ? `That category is currently spoken for. You are on the waitlist and we will reach out the moment the ${categoryName} slot opens.`
+        : 'Thank you. We will confirm your slot and the next steps within one business day.';
+
+      form.hidden = true;
+      confirmation.hidden = false;
+      confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Apply for a spot';
+      alert('Something went wrong submitting your application. Please try again or call/email us directly.');
+    }
+  });
+}
+
+renderSlotGrid();
+populateCategorySelect();
+renderFaq();
+setupForm();
