@@ -1,23 +1,32 @@
-// Single source of truth for the slot grid AND the form dropdown.
-// Edit statuses here: 'TAKEN' | 'OPEN' | '1 LEFT'
+// Each category has one slot per zone. Edit zone statuses here: 'TAKEN' | 'OPEN'
+const ZONES = ['West Bozeman', 'Southeast Bozeman', 'Springhill Bridger', 'Belgrade'];
+
+function allZonesOpen() {
+  return Object.fromEntries(ZONES.map((z) => [z, 'OPEN']));
+}
+
 const CATEGORIES = [
-  { category: 'Roofing', status: 'TAKEN' },
-  { category: 'HVAC', status: 'TAKEN' },
-  { category: 'Windows & Doors', status: 'OPEN' },
-  { category: 'Remodel / General Contractor', status: 'OPEN' },
-  { category: 'Dental & Ortho', status: '1 LEFT' },
-  { category: 'Med Spa', status: 'OPEN' },
-  { category: 'Landscape & Hardscape', status: 'TAKEN' },
-  { category: 'Garage Doors', status: 'OPEN' },
-  { category: 'Gutters', status: 'OPEN' },
-  { category: 'Pest Control', status: 'TAKEN' },
-  { category: 'Plumbing', status: '1 LEFT' },
-  { category: 'Auto Repair', status: 'OPEN' },
-  { category: 'Self Storage', status: 'OPEN' },
-  { category: 'Chiropractic', status: 'OPEN' },
-  { category: 'Veterinary', status: '1 LEFT' },
-  { category: 'Insurance', status: 'TAKEN' },
+  { category: 'Roofing', zones: allZonesOpen() },
+  { category: 'HVAC', zones: allZonesOpen() },
+  { category: 'Windows & Doors', zones: allZonesOpen() },
+  { category: 'Remodel / General Contractor', zones: allZonesOpen() },
+  { category: 'Dental & Ortho', zones: allZonesOpen() },
+  { category: 'Med Spa', zones: allZonesOpen() },
+  { category: 'Landscape & Hardscape', zones: allZonesOpen() },
+  { category: 'Garage Doors', zones: allZonesOpen() },
+  { category: 'Gutters', zones: allZonesOpen() },
+  { category: 'Pest Control', zones: allZonesOpen() },
+  { category: 'Plumbing', zones: allZonesOpen() },
+  { category: 'Auto Repair', zones: allZonesOpen() },
+  { category: 'Self Storage', zones: allZonesOpen() },
+  { category: 'Chiropractic', zones: allZonesOpen() },
+  { category: 'Veterinary', zones: allZonesOpen() },
+  { category: 'Insurance', zones: allZonesOpen() },
 ];
+
+function openZoneCount(cat) {
+  return ZONES.filter((z) => cat.zones[z] === 'OPEN').length;
+}
 
 const FAQS = [
   { q: 'Is design included?', a: 'Yes. We design your side of the card so it matches the look of the shared piece and reads clearly in four seconds. You approve the art before the deadline.' },
@@ -28,16 +37,17 @@ const FAQS = [
   { q: 'What sizes are available?', a: 'The shared card runs at a set format so every business gets comparable space. We will confirm the exact dimensions and your allotment when we prepare your art.' },
 ];
 
-const STATUS_META = {
-  TAKEN:    { label: 'Taken',  tileClass: 'slot-taken',   badgeClass: 'badge-taken',   clickable: false },
-  OPEN:     { label: 'Open',   tileClass: 'slot-open',    badgeClass: 'badge-open',    clickable: true },
-  '1 LEFT': { label: '1 left', tileClass: 'slot-oneleft', badgeClass: 'badge-oneleft', clickable: true },
-};
+function slotMeta(cat) {
+  const openCount = openZoneCount(cat);
+  if (openCount === 0) return { label: 'Full', tileClass: 'slot-taken', badgeClass: 'badge-taken', clickable: false };
+  if (openCount === ZONES.length) return { label: `${openCount} open`, tileClass: 'slot-open', badgeClass: 'badge-open', clickable: true };
+  return { label: `${openCount} of ${ZONES.length} open`, tileClass: 'slot-oneleft', badgeClass: 'badge-oneleft', clickable: true };
+}
 
 function renderSlotGrid() {
   const grid = document.getElementById('slotGrid');
   grid.innerHTML = CATEGORIES.map((c) => {
-    const meta = STATUS_META[c.status];
+    const meta = slotMeta(c);
     const tag = meta.clickable ? 'button' : 'div';
     const typeAttr = meta.clickable ? 'type="button"' : 'aria-disabled="true"';
     const dataAttr = meta.clickable ? `data-category="${c.category}"` : '';
@@ -57,13 +67,27 @@ function populateCategorySelect() {
   CATEGORIES.forEach((c) => {
     const opt = document.createElement('option');
     opt.value = c.category;
-    opt.textContent = c.status === 'TAKEN' ? `${c.category} (waitlist)` : c.category;
+    opt.textContent = openZoneCount(c) === 0 ? `${c.category} (waitlist)` : c.category;
     select.appendChild(opt);
+  });
+}
+
+function populateZoneSelect(categoryName) {
+  const zoneSelect = document.getElementById('zoneSelect');
+  const cat = CATEGORIES.find((c) => c.category === categoryName);
+  zoneSelect.innerHTML = '<option value="">Select a zone</option>';
+  ZONES.forEach((zoneName) => {
+    const taken = cat && cat.zones[zoneName] === 'TAKEN';
+    const opt = document.createElement('option');
+    opt.value = zoneName;
+    opt.textContent = taken ? `${zoneName} (waitlist)` : zoneName;
+    zoneSelect.appendChild(opt);
   });
 }
 
 function selectCategory(name) {
   document.getElementById('categorySelect').value = name;
+  populateZoneSelect(name);
   const el = document.getElementById('apply');
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 16, behavior: 'smooth' });
 }
@@ -100,11 +124,15 @@ function setupForm() {
   const message = document.getElementById('confirmationMessage');
   const submitBtn = document.getElementById('submitBtn');
 
+  form.category.addEventListener('change', () => populateZoneSelect(form.category.value));
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const categoryName = form.category.value;
-    const isTaken = CATEGORIES.some((c) => c.category === categoryName && c.status === 'TAKEN');
+    const zoneName = form.zone.value;
+    const cat = CATEGORIES.find((c) => c.category === categoryName);
+    const isTaken = !!(cat && cat.zones[zoneName] === 'TAKEN');
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting…';
@@ -119,7 +147,7 @@ function setupForm() {
 
       heading.textContent = isTaken ? "You're on the waitlist." : 'Thank you.';
       message.textContent = isTaken
-        ? `That category is currently spoken for. You are on the waitlist and we will reach out the moment the ${categoryName} slot opens.`
+        ? `That category is currently spoken for in ${zoneName}. You are on the waitlist and we will reach out the moment the slot opens.`
         : 'Thank you. We will confirm your slot and the next steps within one business day.';
 
       form.hidden = true;
@@ -135,5 +163,6 @@ function setupForm() {
 
 renderSlotGrid();
 populateCategorySelect();
+populateZoneSelect('');
 renderFaq();
 setupForm();
