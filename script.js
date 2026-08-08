@@ -1,4 +1,4 @@
-// Each category has one slot per zone. Edit zone statuses here: 'TAKEN' | 'OPEN'
+// Each category is exclusive to one business per zone. Edit zone statuses here: 'TAKEN' | 'OPEN'
 const ZONES = ['West Bozeman', 'Southeast Bozeman', 'Springhill Bridger', 'Belgrade'];
 
 function allZonesOpen() {
@@ -12,6 +12,7 @@ const CATEGORIES = [
   { category: 'Remodel / General Contractor', zones: allZonesOpen() },
   { category: 'Dental & Ortho', zones: allZonesOpen() },
   { category: 'Med Spa', zones: allZonesOpen() },
+  { category: 'Cosmetic & Medical Services', zones: allZonesOpen() },
   { category: 'Landscape & Hardscape', zones: allZonesOpen() },
   { category: 'Garage Doors', zones: allZonesOpen() },
   { category: 'Gutters', zones: allZonesOpen() },
@@ -30,7 +31,7 @@ function openZoneCount(cat) {
 
 const FAQS = [
   { q: 'Is design included?', a: 'Yes. We design your side of the card so it matches the look of the shared piece and reads clearly in four seconds. You approve the art before the deadline.' },
-  { q: 'What if my category is already taken?', a: 'One business holds the slot at a time. If your category is taken you can join the waitlist, and we will contact you the moment it opens. In the meantime we may have an adjacent category open.' },
+  { q: 'What if my category is already taken?', a: 'One business holds each zone at a time. If your category is taken in the zone you want, you can join the waitlist, and we will contact you the moment it opens. In the meantime you may have other zones open.' },
   { q: 'How do I know it worked?', a: 'We use a dedicated phone number and a simple offer specific to the card so calls are traceable back to the drop. You will know which calls came from the mail.' },
   { q: 'What is the minimum commitment?', a: 'Direct mail compounds with repetition, so we ask for a short run of consecutive drops rather than a single send. We will walk through the schedule before you commit.' },
   { q: 'How are the routes chosen?', a: 'Routes are hand-selected by carrier route in the USPS EDDM tool. Single family homes with $90,000 to $120,000+ median household income. No apartments, no businesses. The same routes every month.' },
@@ -147,8 +148,8 @@ function setupForm() {
 
       heading.textContent = isTaken ? "You're on the waitlist." : 'Thank you.';
       message.textContent = isTaken
-        ? `That category is currently spoken for in ${zoneName}. You are on the waitlist and we will reach out the moment the slot opens.`
-        : 'Thank you. We will confirm your slot and the next steps within one business day.';
+        ? `That category is currently spoken for in ${zoneName}. You are on the waitlist and we will reach out the moment the zone opens.`
+        : 'Thank you. We will confirm your zone and the next steps within one business day.';
 
       form.hidden = true;
       confirmation.hidden = false;
