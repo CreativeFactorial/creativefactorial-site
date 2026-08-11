@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Wilson;Mark;;;
+FN:Mark Wilson
+ORG:Creative Factorial
+TEL;TYPE=CELL,VOICE:+14066267837
+EMAIL;TYPE=INTERNET:hello@creativefactorial.com
+URL:https://creativefactorial.com
+END:VCARD

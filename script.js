@@ -73,22 +73,23 @@ function populateCategorySelect() {
   });
 }
 
-function populateZoneSelect(categoryName) {
-  const zoneSelect = document.getElementById('zoneSelect');
+function renderZoneCheckboxes(categoryName) {
+  const container = document.getElementById('zoneCheckboxes');
   const cat = CATEGORIES.find((c) => c.category === categoryName);
-  zoneSelect.innerHTML = '<option value="">Select a zone</option>';
-  ZONES.forEach((zoneName) => {
-    const taken = cat && cat.zones[zoneName] === 'TAKEN';
-    const opt = document.createElement('option');
-    opt.value = zoneName;
-    opt.textContent = taken ? `${zoneName} (waitlist)` : zoneName;
-    zoneSelect.appendChild(opt);
-  });
+  if (!cat) {
+    container.innerHTML = '<p class="field-hint">Select a category first</p>';
+    return;
+  }
+  container.innerHTML = ZONES.map((zoneName) => {
+    const taken = cat.zones[zoneName] === 'TAKEN';
+    const label = taken ? `${zoneName} (waitlist)` : zoneName;
+    return `<label class="checkbox-field"><input type="checkbox" name="zone" value="${zoneName}"> ${label}</label>`;
+  }).join('');
 }
 
 function selectCategory(name) {
   document.getElementById('categorySelect').value = name;
-  populateZoneSelect(name);
+  renderZoneCheckboxes(name);
   const el = document.getElementById('apply');
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 16, behavior: 'smooth' });
 }
@@ -120,20 +121,21 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaewqydw';
 
 function setupForm() {
   const form = document.getElementById('applyForm');
-  const confirmation = document.getElementById('confirmation');
-  const heading = document.getElementById('confirmationHeading');
-  const message = document.getElementById('confirmationMessage');
   const submitBtn = document.getElementById('submitBtn');
+  const zoneError = document.getElementById('zoneError');
 
-  form.category.addEventListener('change', () => populateZoneSelect(form.category.value));
+  form.category.addEventListener('change', () => renderZoneCheckboxes(form.category.value));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const categoryName = form.category.value;
-    const zoneName = form.zone.value;
-    const cat = CATEGORIES.find((c) => c.category === categoryName);
-    const isTaken = !!(cat && cat.zones[zoneName] === 'TAKEN');
+    const checkedZones = form.querySelectorAll('input[name="zone"]:checked');
+    if (checkedZones.length === 0) {
+      zoneError.hidden = false;
+      zoneError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    zoneError.hidden = true;
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting…';
@@ -146,14 +148,7 @@ function setupForm() {
       });
       if (!response.ok) throw new Error('Form submission failed');
 
-      heading.textContent = isTaken ? "You're on the waitlist." : 'Thank you.';
-      message.textContent = isTaken
-        ? `That category is currently spoken for in ${zoneName}. You are on the waitlist and we will reach out the moment the zone opens.`
-        : 'Thank you. We will confirm your zone and the next steps within one business day.';
-
-      form.hidden = true;
-      confirmation.hidden = false;
-      confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.location.href = 'thank-you.html';
     } catch (err) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Apply for a spot';
@@ -164,6 +159,6 @@ function setupForm() {
 
 renderSlotGrid();
 populateCategorySelect();
-populateZoneSelect('');
+renderZoneCheckboxes('');
 renderFaq();
 setupForm();

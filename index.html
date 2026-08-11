@@ -178,12 +178,13 @@
           </select>
         </label>
 
-        <label class="field">
-          <span class="field-label">Zone</span>
-          <select name="zone" id="zoneSelect" required>
-            <option value="">Select a category first</option>
-          </select>
-        </label>
+        <fieldset class="channels">
+          <legend>Zone (select all that apply)</legend>
+          <div class="channels-grid" id="zoneCheckboxes">
+            <p class="field-hint">Select a category first</p>
+          </div>
+          <p class="field-error" id="zoneError" hidden>Select at least one zone.</p>
+        </fieldset>
 
         <div class="field-row">
           <label class="field">
@@ -265,11 +266,6 @@
 
         <button type="submit" class="btn btn-solid btn-submit" id="submitBtn">Apply for a spot</button>
       </form>
-
-      <div class="confirmation" id="confirmation" hidden>
-        <h3 id="confirmationHeading">Thank you.</h3>
-        <p id="confirmationMessage">We will confirm your zone and the next steps within one business day.</p>
-      </div>
     </div>
   </section>
 
