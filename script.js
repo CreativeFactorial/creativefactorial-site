@@ -158,16 +158,17 @@ function setupForm() {
 }
 
 // Simplified general-area shapes for each zone (not precise USPS route
-// boundaries). Homes/cost sourced from each zone's EDDM order summary;
-// income/household size only captured for West Bozeman's PDF export.
+// boundaries). Homes sourced from each zone's EDDM order summary; income
+// and household size are household-weighted averages across that zone's
+// selected routes from the EDDM table view.
 const ZONE_INFO = [
   {
     name: 'West Bozeman',
     color: '#E8590C',
     coords: [[45.690, -111.115], [45.693, -111.075], [45.678, -111.058], [45.660, -111.062], [45.655, -111.095], [45.665, -111.120]],
     homes: 2537,
-    income: '$90.65k',
-    householdSize: '2.59 people',
+    income: '$98.51k',
+    householdSize: '2.55 people',
     cost: 250,
   },
   {
