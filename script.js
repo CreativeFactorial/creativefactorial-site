@@ -157,8 +157,92 @@ function setupForm() {
   });
 }
 
+// Simplified general-area shapes for each zone (not precise USPS route
+// boundaries). Homes/cost sourced from each zone's EDDM order summary;
+// income/household size only captured for West Bozeman's PDF export.
+const ZONE_INFO = [
+  {
+    name: 'West Bozeman',
+    color: '#E8590C',
+    coords: [[45.690, -111.115], [45.693, -111.075], [45.678, -111.058], [45.660, -111.062], [45.655, -111.095], [45.665, -111.120]],
+    homes: 2537,
+    income: '$90.65k',
+    householdSize: '2.59 people',
+    cost: 250,
+  },
+  {
+    name: 'Southeast Bozeman',
+    color: '#1A1A1A',
+    coords: [[45.680, -111.010], [45.690, -110.985], [45.675, -110.965], [45.655, -110.975], [45.648, -111.005], [45.662, -111.020]],
+    homes: 2675,
+    cost: 250,
+  },
+  {
+    name: 'Springhill Bridger',
+    color: '#2E7D32',
+    coords: [[45.715, -111.045], [45.740, -111.020], [45.775, -110.980], [45.790, -110.950], [45.770, -110.945], [45.735, -110.985], [45.705, -111.015]],
+    homes: 2620,
+    cost: 250,
+  },
+  {
+    name: 'Belgrade',
+    color: '#1565C0',
+    coords: [[45.795, -111.205], [45.800, -111.165], [45.780, -111.145], [45.760, -111.155], [45.755, -111.190], [45.770, -111.210]],
+    homes: 2655,
+    cost: 250,
+  },
+];
+
+function zoneTooltipHtml(zone) {
+  const lines = [`<span>${zone.homes.toLocaleString()} homes</span>`];
+  if (zone.income) lines.push(`<span>Avg income ${zone.income}</span>`);
+  if (zone.householdSize) lines.push(`<span>Avg household ${zone.householdSize}</span>`);
+  lines.push(`<span>$${zone.cost} per drop</span>`);
+  return `<div class="zone-tooltip"><strong>${zone.name}</strong>${lines.join('')}</div>`;
+}
+
+function initZoneMap() {
+  const mapEl = document.getElementById('zoneMap');
+  if (!mapEl || typeof L === 'undefined') return; // Leaflet failed to load; skip gracefully
+
+  const map = L.map(mapEl, { scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  let combinedBounds = null;
+  ZONE_INFO.forEach((zone) => {
+    const polygon = L.polygon(zone.coords, {
+      color: zone.color, weight: 2, fillColor: zone.color, fillOpacity: 0.35,
+    }).addTo(map);
+
+    const content = zoneTooltipHtml(zone);
+    polygon.bindTooltip(content, { sticky: true, direction: 'top' });
+    polygon.bindPopup(content);
+    polygon.on('mouseover', () => polygon.setStyle({ fillOpacity: 0.55 }));
+    polygon.on('mouseout', () => polygon.setStyle({ fillOpacity: 0.35 }));
+
+    combinedBounds = combinedBounds ? combinedBounds.extend(polygon.getBounds()) : polygon.getBounds();
+  });
+
+  if (combinedBounds) map.fitBounds(combinedBounds, { padding: [24, 24] });
+}
+
+function renderZoneLegend() {
+  const legend = document.getElementById('zoneLegend');
+  legend.innerHTML = ZONE_INFO.map((zone) => `
+    <div class="zone-legend-item">
+      <span class="zone-legend-swatch" style="background:${zone.color}"></span>
+      ${zone.name}
+    </div>
+  `).join('');
+}
+
 renderSlotGrid();
 populateCategorySelect();
 renderZoneCheckboxes('');
 renderFaq();
 setupForm();
+initZoneMap();
+renderZoneLegend();

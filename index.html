@@ -26,6 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -92,6 +93,16 @@
 
     <div class="slot-grid" id="slotGrid">
       <!-- Slot tiles are rendered by script.js from the CATEGORIES data below -->
+    </div>
+  </section>
+
+  <section class="wrap section" id="zones">
+    <p class="eyebrow">Coverage</p>
+    <h2 class="section-title-tight">Four zones. One card. Real neighborhoods.</h2>
+    <p class="section-sub">Hover or tap a zone for the numbers. Every zone runs the same $250 per drop.</p>
+    <div id="zoneMap" class="zone-map" role="img" aria-label="Map of the four EDDM drop zones around Bozeman and Belgrade, Montana"></div>
+    <div class="zone-legend" id="zoneLegend">
+      <!-- Legend rendered by script.js from the ZONE_INFO data below -->
     </div>
   </section>
 
@@ -289,6 +300,7 @@
     </div>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="script.js"></script>
 </body>
 </html>
