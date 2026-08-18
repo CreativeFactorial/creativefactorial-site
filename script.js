@@ -73,23 +73,8 @@ function populateCategorySelect() {
   });
 }
 
-function renderZoneCheckboxes(categoryName) {
-  const container = document.getElementById('zoneCheckboxes');
-  const cat = CATEGORIES.find((c) => c.category === categoryName);
-  if (!cat) {
-    container.innerHTML = '<p class="field-hint">Select a category first</p>';
-    return;
-  }
-  container.innerHTML = ZONES.map((zoneName) => {
-    const taken = cat.zones[zoneName] === 'TAKEN';
-    const label = taken ? `${zoneName} (waitlist)` : zoneName;
-    return `<label class="checkbox-field"><input type="checkbox" name="zone" value="${zoneName}"> ${label}</label>`;
-  }).join('');
-}
-
 function selectCategory(name) {
   document.getElementById('categorySelect').value = name;
-  renderZoneCheckboxes(name);
   const el = document.getElementById('apply');
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 16, behavior: 'smooth' });
 }
@@ -122,20 +107,9 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xaewqydw';
 function setupForm() {
   const form = document.getElementById('applyForm');
   const submitBtn = document.getElementById('submitBtn');
-  const zoneError = document.getElementById('zoneError');
-
-  form.category.addEventListener('change', () => renderZoneCheckboxes(form.category.value));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const checkedZones = form.querySelectorAll('input[name="zone"]:checked');
-    if (checkedZones.length === 0) {
-      zoneError.hidden = false;
-      zoneError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    zoneError.hidden = true;
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting…';
@@ -151,7 +125,7 @@ function setupForm() {
       window.location.href = 'thank-you.html';
     } catch (err) {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Apply for a spot';
+      submitBtn.textContent = 'Check My Category';
       alert('Something went wrong submitting your application. Please try again or call/email us directly.');
     }
   });
@@ -249,7 +223,6 @@ function renderZoneLegend() {
 
 renderSlotGrid();
 populateCategorySelect();
-renderZoneCheckboxes('');
 renderFaq();
 setupForm();
 initZoneMap();

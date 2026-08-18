@@ -34,7 +34,7 @@
   <header class="site-header">
     <div class="wrap header-row">
       <span class="brand">Creative Factorial</span>
-      <a href="#apply" class="header-cta">Apply for a spot</a>
+      <a href="#apply" class="header-cta">Check My Category</a>
     </div>
   </header>
 
@@ -45,6 +45,45 @@
     <div class="hero-buttons">
       <a href="#slots" class="btn btn-solid">See open categories</a>
       <a href="#math" class="btn btn-outline">Check the math</a>
+    </div>
+  </section>
+
+  <section class="band band-light" id="apply">
+    <div class="wrap wrap-narrow">
+      <h2>Check My Category</h2>
+      <p class="section-sub">Tell us your business and category, and we will confirm whether it is still open in your area.</p>
+
+      <form id="applyForm" class="apply-form">
+        <label class="field">
+          <span class="field-label">Business name</span>
+          <input type="text" name="business" required>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Category</span>
+          <select name="category" id="categorySelect" required>
+            <option value="">Select your category</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Your name</span>
+          <input type="text" name="name" required>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Phone</span>
+            <input type="tel" name="phone" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Email</span>
+            <input type="email" name="email" required>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-solid btn-submit" id="submitBtn">Check My Category</button>
+      </form>
     </div>
   </section>
 
@@ -77,7 +116,7 @@
     <div class="section-head">
       <div>
         <h2>Open categories</h2>
-        <p class="section-sub">One business per category, per zone — first come. Tap an open category to claim your zone on the application below.</p>
+        <p class="section-sub">One business per category, per zone — first come. Tap an open category to check it in the form above.</p>
       </div>
       <div class="drop-dates">
         <div>
@@ -168,115 +207,6 @@
       <div class="logo-slot">
         <img src="assets/logos/phoenix-garden.jpg" alt="Phoenix Garden Center">
       </div>
-    </div>
-  </section>
-
-  <section class="band band-light" id="apply">
-    <div class="wrap wrap-narrow">
-      <h2>Apply for a spot</h2>
-      <p class="section-sub">One business per category, per zone. Tell us about yours and we will confirm whether your zone is open for the next drop.</p>
-
-      <form id="applyForm" class="apply-form">
-        <label class="field">
-          <span class="field-label">Business name</span>
-          <input type="text" name="business" required>
-        </label>
-
-        <label class="field">
-          <span class="field-label">Category</span>
-          <select name="category" id="categorySelect" required>
-            <option value="">Select your category</option>
-          </select>
-        </label>
-
-        <fieldset class="channels">
-          <legend>Zone (select all that apply)</legend>
-          <div class="channels-grid" id="zoneCheckboxes">
-            <p class="field-hint">Select a category first</p>
-          </div>
-          <p class="field-error" id="zoneError" hidden>Select at least one zone.</p>
-        </fieldset>
-
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">First name</span>
-            <input type="text" name="first" required>
-          </label>
-          <label class="field">
-            <span class="field-label">Last name</span>
-            <input type="text" name="last" required>
-          </label>
-        </div>
-
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">Phone</span>
-            <input type="tel" name="phone" required>
-          </label>
-          <label class="field">
-            <span class="field-label">Email</span>
-            <input type="email" name="email" required>
-          </label>
-        </div>
-
-        <label class="field">
-          <span class="field-label">Years in business</span>
-          <select name="years" required>
-            <option value="">Select</option>
-            <option>Under 2</option>
-            <option>2-5</option>
-            <option>5-10</option>
-            <option>10+</option>
-          </select>
-        </label>
-
-        <fieldset class="channels">
-          <legend>Where do you advertise now?</legend>
-          <div class="channels-grid">
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Facebook/Instagram"> Facebook / Instagram</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Google"> Google</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Direct mail"> Direct mail</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Radio"> Radio</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Print"> Print</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Word of mouth only"> Word of mouth only</label>
-            <label class="checkbox-field"><input type="checkbox" name="channels" value="Nowhere yet"> Nowhere yet</label>
-          </div>
-        </fieldset>
-
-        <label class="field">
-          <span class="field-label">What is an average customer worth to you?</span>
-          <select name="value" required>
-            <option value="">Select a range</option>
-            <option>Under $150</option>
-            <option>$150-500</option>
-            <option>$500-1,500</option>
-            <option>$1,500-5,000</option>
-            <option>$5,000+</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="field-label">Could you handle 10 to 15 new calls next month?</span>
-          <select name="capacity" required>
-            <option value="">Select</option>
-            <option>Yes</option>
-            <option>Not sure</option>
-            <option>No</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="field-label">Which drop are you interested in?</span>
-          <select name="drop" required>
-            <option value="">Select a drop</option>
-            <option>September 2026 drop</option>
-            <option>October 2026 drop</option>
-            <option>November 2026 drop</option>
-          </select>
-        </label>
-
-        <button type="submit" class="btn btn-solid btn-submit" id="submitBtn">Apply for a spot</button>
-      </form>
     </div>
   </section>
 

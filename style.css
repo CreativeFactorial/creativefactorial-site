@@ -170,8 +170,6 @@ button.slot-tile { border: none; }
 .channels-grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
 .checkbox-field { display: flex; align-items: center; gap: 9px; font-size: 15px; padding: 6px 0; }
 .checkbox-field input { width: 18px; height: 18px; accent-color: #E8590C; }
-.field-hint { margin: 0; font-size: 14px; color: rgba(26, 26, 26, 0.5); grid-column: 1 / -1; }
-.field-error { margin: 10px 2px 0; font-size: 13px; font-weight: 700; color: #C0392B; }
 .btn-submit { margin-top: 6px; border: none; font-size: 15px; letter-spacing: 0.08em; padding: 18px 30px; }
 .confirmation { margin-top: 40px; padding: 26px 28px; background: #fff; border: 1.5px solid #E8590C; border-radius: 16px; }
 .confirmation h3 { margin: 0 0 10px; font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
